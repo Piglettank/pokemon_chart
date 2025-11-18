@@ -29,32 +29,6 @@ enum Types {
     return Helper.effectiveness(attack, this);
   }
 
-  Color get textColor {
-    switch (this) {
-      case Types.normal:
-      case Types.fire:
-      case Types.water:
-      case Types.grass:
-      case Types.electric:
-      case Types.ice:
-      case Types.flying:
-      case Types.psychic:
-      case Types.bug:
-      case Types.ghost:
-      case Types.steel:
-      case Types.dragon:
-      case Types.fairy:
-        return Color.fromARGB(255, 30, 30, 30);
-
-      case Types.poison:
-      case Types.ground:
-      case Types.fighting:
-      case Types.rock:
-      case Types.dark:
-        return const Color.fromARGB(255, 225, 225, 225);
-    }
-  }
-
   Color get color {
     switch (this) {
       case Types.normal:
@@ -76,13 +50,13 @@ enum Types {
         return Color.fromARGB(255, 127, 235, 245);
 
       case Types.fighting:
-        return Color.fromARGB(255, 110, 82, 54);
+        return Color.fromARGB(255, 160, 113, 66);
 
       case Types.poison:
         return Color.fromARGB(255, 72, 26, 72);
 
       case Types.ground:
-        return Color.fromARGB(255, 122, 108, 82);
+        return Color.fromARGB(255, 156, 144, 121);
 
       case Types.flying:
         return Color.fromARGB(255, 179, 213, 212);
@@ -100,13 +74,13 @@ enum Types {
         return Color.fromARGB(255, 152, 159, 168);
 
       case Types.dark:
-        return Color.fromARGB(255, 47, 47, 48);
+        return Color.fromARGB(255, 25, 25, 26);
 
       case Types.steel:
         return Color.fromARGB(255, 132, 135, 135);
 
       case Types.dragon:
-        return Color.fromARGB(255, 167, 95, 187);
+        return Color.fromARGB(255, 160, 65, 201);
 
       case Types.fairy:
         return Color.fromARGB(255, 227, 135, 213);
