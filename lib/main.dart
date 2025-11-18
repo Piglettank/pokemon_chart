@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:pokemon_chart/extensions.dart';
 import 'package:pokemon_chart/type.dart';
@@ -15,21 +17,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: const MyHomePage(),
@@ -61,11 +48,11 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             Row(
               children: [
-                Expanded(child: Container()),
+                SizedBox(width: 80),
                 for (final type in Types.values)
                   Expanded(
                     child: Transform.rotate(
-                      angle: 70,
+                      angle: 90 * pi / 180,
                       child: Text(type.name.capitalize),
                     ),
                   ),
@@ -84,9 +71,37 @@ class _MyHomePageState extends State<MyHomePage> {
                             Spacer(),
                             for (final type in Types.values)
                               Expanded(
-                                child: Align(
-                                  alignment: .centerLeft,
-                                  child: Text(type.name.capitalize),
+                                child: Container(
+                                  width: 80,
+                                  padding: .only(left: 8),
+                                  decoration: BoxDecoration(
+                                    color: type.color,
+                                    borderRadius: .circular(4),
+                                  ),
+                                  child: Align(
+                                    alignment: .centerLeft,
+                                    child: Stack(
+                                      children: [
+                                        Text(
+                                          type.name.capitalize,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            foreground: Paint()
+                                              ..style = .stroke
+                                              ..strokeWidth = 4
+                                              ..color = Colors.black,
+                                          ),
+                                        ),
+                                        Text(
+                                          type.name.capitalize,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ),
                           ],
@@ -100,25 +115,28 @@ class _MyHomePageState extends State<MyHomePage> {
                               Spacer(),
                               for (final attack in Types.values)
                                 Expanded(
-                                  child: Row(
-                                    children: [
-                                      for (final defence in Types.values)
-                                        Expanded(
-                                          child: Builder(
-                                            builder: (context) {
-                                              final position = Position(
-                                                Types.values.indexOf(attack),
-                                                Types.values.indexOf(defence),
-                                              );
+                                  child: Container(
+                                    color: attack.color.withAlpha(20),
+                                    child: Row(
+                                      children: [
+                                        for (final defence in Types.values)
+                                          Expanded(
+                                            child: Builder(
+                                              builder: (context) {
+                                                final position = Position(
+                                                  Types.values.indexOf(attack),
+                                                  Types.values.indexOf(defence),
+                                                );
 
-                                              return EffectivenessBox(
-                                                attack: attack,
-                                                defence: defence,
-                                              );
-                                            },
+                                                return EffectivenessBox(
+                                                  attack: attack,
+                                                  defence: defence,
+                                                );
+                                              },
+                                            ),
                                           ),
-                                        ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                             ],
@@ -153,7 +171,18 @@ class EffectivenessBox extends StatelessWidget {
     if (effectiveness == 1) {
       return SizedBox();
     }
+    Color color = Colors.red;
+    if (effectiveness > 1) {
+      color = Colors.green;
+    } else if (effectiveness == 0) {
+      color = Colors.grey;
+    }
 
-    return Center(child: Text(effectiveness.toString()));
+    return Center(
+      child: Container(
+        color: color.withAlpha(50),
+        child: Text(effectiveness.toString()),
+      ),
+    );
   }
 }
