@@ -4,3 +4,30 @@ extension StringExtensions on String {
     return substring(0, 1).toUpperCase() + substring(1);
   }
 }
+
+extension PokemonDoubleExtensions on double {
+  bool get isSuperEffective {
+    return this > 1;
+  }
+
+  bool get isNotVeryEffective {
+    return this < 1;
+  }
+
+  bool get isImmune {
+    return this == 0;
+  }
+
+  String get asSymbol {
+    if (isSuperEffective) {
+      return '2';
+    }
+    if (isNotVeryEffective) {
+      return '½';
+    }
+    if (isImmune) {
+      return '0';
+    }
+    return '';
+  }
+}

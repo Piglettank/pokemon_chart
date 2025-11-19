@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:pokemon_chart/extensions.dart';
 import 'package:pokemon_chart/type.dart';
@@ -129,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                           },
                                           child: Row(
                                             children: [
-                                              for (final defence
+                                              for (final defense
                                                   in Types.values)
                                                 Expanded(
                                                   child: Builder(
@@ -139,13 +137,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                                           attack,
                                                         ),
                                                         Types.values.indexOf(
-                                                          defence,
+                                                          defense,
                                                         ),
                                                       );
 
                                                       return EffectivenessBox(
                                                         attack: attack,
-                                                        defence: defence,
+                                                        defense: defense,
                                                       );
                                                     },
                                                   ),
@@ -206,24 +204,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class EffectivenessBox extends StatelessWidget {
   final Types attack;
-  final Types defence;
+  final Types defense;
   const EffectivenessBox({
     required this.attack,
-    required this.defence,
+    required this.defense,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    final effectiveness = defence.defend(attack);
+    final effectiveness = defense.defend(attack);
 
     if (effectiveness == 1) {
       return SizedBox.expand();
     }
     Color color = Colors.red;
-    if (effectiveness > 1) {
+    if (effectiveness.isSuperEffective) {
       color = Colors.green;
-    } else if (effectiveness == 0) {
+    } else if (effectiveness.isImmune) {
       color = Colors.grey;
     }
 
@@ -235,7 +233,7 @@ class EffectivenessBox extends StatelessWidget {
           right: BorderSide(color: Colors.black26),
         ),
       ),
-      child: Center(child: Text(effectiveness.toString())),
+      child: Center(child: Text(effectiveness.asSymbol)),
     );
   }
 }
