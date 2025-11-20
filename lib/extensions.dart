@@ -19,14 +19,14 @@ extension PokemonDoubleExtensions on double {
   }
 
   String get asSymbol {
+    if (isImmune) {
+      return '0';
+    }
     if (isSuperEffective) {
       return '2';
     }
     if (isNotVeryEffective) {
       return '½';
-    }
-    if (isImmune) {
-      return '0';
     }
     return '';
   }
