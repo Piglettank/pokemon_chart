@@ -29,13 +29,20 @@ enum Types {
     return Helper.effectiveness(attack, this);
   }
 
+  String imagePath() {
+    return 'assets/types/${name}_48.png';
+  }
+
+  bool get isFirst => index == 0;
+  bool get isLast => index == Types.values.length - 1;
+
   Color get color {
     switch (this) {
       case Types.normal:
         return Color.fromARGB(255, 244, 237, 237);
 
       case Types.fire:
-        return Color.fromARGB(255, 247, 127, 14);
+        return Color.fromARGB(255, 247, 100, 14);
 
       case Types.water:
         return Color.fromARGB(255, 28, 153, 220);
@@ -50,37 +57,37 @@ enum Types {
         return Color.fromARGB(255, 127, 235, 245);
 
       case Types.fighting:
-        return Color.fromARGB(255, 160, 113, 66);
+        return Color.fromARGB(255, 203, 141, 79);
 
       case Types.poison:
-        return Color.fromARGB(255, 72, 26, 72);
+        return Color.fromARGB(255, 111, 38, 111);
 
       case Types.ground:
-        return Color.fromARGB(255, 156, 144, 121);
+        return Color.fromARGB(255, 122, 91, 79);
 
       case Types.flying:
-        return Color.fromARGB(255, 179, 213, 212);
+        return Color.fromARGB(255, 156, 197, 207);
 
       case Types.psychic:
-        return Color.fromARGB(255, 201, 71, 203);
+        return Color.fromARGB(255, 208, 93, 175);
 
       case Types.bug:
-        return Color.fromARGB(255, 140, 202, 89);
+        return Color.fromARGB(255, 128, 158, 65);
 
       case Types.rock:
-        return Color.fromARGB(255, 77, 64, 40);
+        return Color.fromARGB(255, 106, 100, 70);
 
       case Types.ghost:
-        return Color.fromARGB(255, 152, 159, 168);
+        return Color.fromARGB(255, 139, 113, 151);
 
       case Types.dark:
-        return Color.fromARGB(255, 25, 25, 26);
+        return Color.fromARGB(255, 59, 54, 54);
 
       case Types.steel:
-        return Color.fromARGB(255, 132, 135, 135);
+        return Color.fromARGB(255, 135, 147, 147);
 
       case Types.dragon:
-        return Color.fromARGB(255, 160, 65, 201);
+        return Color.fromARGB(255, 68, 64, 144);
 
       case Types.fairy:
         return Color.fromARGB(255, 227, 135, 213);

@@ -6,12 +6,20 @@ extension StringExtensions on String {
 }
 
 extension PokemonDoubleExtensions on double {
+  bool get isHyperEffective {
+    return this == 4;
+  }
+
   bool get isSuperEffective {
     return this > 1;
   }
 
   bool get isNotVeryEffective {
-    return this < 1;
+    return this > 0 && this < 1;
+  }
+
+  bool get isVeryNotEffective {
+    return this == 0.25;
   }
 
   bool get isImmune {
@@ -21,6 +29,12 @@ extension PokemonDoubleExtensions on double {
   String get asSymbol {
     if (isImmune) {
       return '0';
+    }
+    if (isHyperEffective) {
+      return '4';
+    }
+    if (isVeryNotEffective) {
+      return '¼';
     }
     if (isSuperEffective) {
       return '2';
