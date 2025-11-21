@@ -93,4 +93,45 @@ enum Types {
         return Color.fromARGB(255, 227, 135, 213);
     }
   }
+
+  String get shortName {
+    switch (this) {
+      case Types.normal:
+        return "NOR";
+      case Types.fire:
+        return "FIR";
+      case Types.water:
+        return "WAT";
+      case Types.electric:
+        return "ELE";
+      case Types.grass:
+        return "GRA";
+      case Types.ice:
+        return "ICE";
+      case Types.fighting:
+        return "FIG";
+      case Types.poison:
+        return "POI";
+      case Types.ground:
+        return "GRO";
+      case Types.flying:
+        return "FLY";
+      case Types.psychic:
+        return "PSY";
+      case Types.bug:
+        return "BUG";
+      case Types.rock:
+        return "ROC";
+      case Types.ghost:
+        return "GHO";
+      case Types.dragon:
+        return "DRA";
+      case Types.dark:
+        return "DAR";
+      case Types.steel:
+        return "STE";
+      case Types.fairy:
+        return "FAI";
+    }
+  }
 }

@@ -42,7 +42,7 @@ class DefenseOverlay extends StatelessWidget {
           return GestureDetector(
             onTap: onTap,
             child: Padding(
-              padding: .all(12),
+              padding: .symmetric(vertical: 12),
               child: Material(
                 borderRadius: .circular(6),
                 color: Colors.white,
@@ -53,59 +53,89 @@ class DefenseOverlay extends StatelessWidget {
                     borderRadius: .circular(6),
                     border: .all(color: Colors.black26),
                   ),
-                  height: 180,
+                  height: 204,
                   width: constraints.maxWidth,
-                  child: Row(
-                    crossAxisAlignment: .start,
+                  child: Column(
+                    spacing: 8,
+                    mainAxisSize: .min,
                     children: [
-                      SizedBox(
-                        width: 104,
-                        child: Column(
-                          mainAxisAlignment: .center,
+                      Row(
+                        children: [
+                          SizedBox(width: 114, child: OutlinedText('Defense')),
+                          SizedBox(width: 24),
+                          OutlinedText('Attack'),
+                        ],
+                      ),
+                      Expanded(
+                        child: Row(
                           crossAxisAlignment: .start,
                           children: [
-                            OutlinedText('Defense'),
-                            SizedBox(height: 8),
-
-                            Row(
-                              spacing: 8,
-                              children: [
-                                for (final type in types)
-                                  Image.asset(
-                                    type.imagePath(),
-                                    width: 48,
-                                    height: 48,
+                            SizedBox(
+                              width: 114,
+                              child: Column(
+                                mainAxisAlignment: .center,
+                                crossAxisAlignment: .start,
+                                children: [
+                                  SizedBox(height: 8),
+                                  Row(
+                                    spacing: 8,
+                                    children: [
+                                      for (final type in types)
+                                        Column(
+                                          children: [
+                                            Image.asset(
+                                              type.imagePath(),
+                                              width: 48,
+                                              height: 48,
+                                            ),
+                                            SizedBox(height: 4),
+                                            OutlinedText(
+                                              type.shortName,
+                                              fontSize: 12,
+                                            ),
+                                          ],
+                                        ),
+                                    ],
                                   ),
-                              ],
+                                  SizedBox(height: 12),
+                                ],
+                              ),
                             ),
-                            SizedBox(height: 12),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 24),
-                      Expanded(
-                        child: ListView(
-                          scrollDirection: .horizontal,
-                          shrinkWrap: true,
-                          children: [
-                            for (final type in hyperEffectiveTypes)
-                              _Attack(type, 4),
-                            SizedBox(width: 8),
-                            for (final type in superEffectiveTypes)
-                              _Attack(type, 2),
-                            SizedBox(width: 8),
-                            for (final type in notVeryEffectiveTypes)
-                              _Attack(type, 0.5),
-                            SizedBox(width: 8),
-                            for (final type in veryNotEffectiveTypes)
-                              _Attack(type, 0.25),
-                            SizedBox(width: 8),
-                            for (final type in immuneTypes) _Attack(type, 0),
-                          ],
-                        ),
-                      ),
+                            SizedBox(width: 24),
+                            Expanded(
+                              child: ListView(
+                                scrollDirection: .horizontal,
+                                shrinkWrap: true,
+                                children: [
+                                  for (final type in hyperEffectiveTypes)
+                                    _Attack(type, 4),
+                                  if (hyperEffectiveTypes.isNotEmpty)
+                                    SizedBox(width: 8),
+                                  for (final type in superEffectiveTypes)
+                                    _Attack(type, 2),
+                                  if (superEffectiveTypes.isNotEmpty)
+                                    SizedBox(width: 8),
+                                  for (final type in notVeryEffectiveTypes)
+                                    _Attack(type, 0.5),
+                                  if (notVeryEffectiveTypes.isNotEmpty)
+                                    SizedBox(width: 8),
+                                  for (final type in veryNotEffectiveTypes)
+                                    _Attack(type, 0.25),
+                                  if (veryNotEffectiveTypes.isNotEmpty)
+                                    SizedBox(width: 8),
+                                  for (final type in immuneTypes)
+                                    _Attack(type, 0),
+                                ],
+                              ),
+                            ),
 
-                      IconButton(onPressed: onTap, icon: Icon(Icons.close)),
+                            IconButton(
+                              onPressed: onTap,
+                              icon: Icon(Icons.close),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),

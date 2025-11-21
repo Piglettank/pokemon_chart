@@ -286,7 +286,8 @@ class EffectivenessBox extends StatelessWidget {
 
 class OutlinedText extends StatelessWidget {
   final String text;
-  const OutlinedText(this.text, {super.key});
+  final double? fontSize;
+  const OutlinedText(this.text, {this.fontSize, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -295,6 +296,7 @@ class OutlinedText extends StatelessWidget {
         Text(
           text,
           style: TextStyle(
+            fontSize: fontSize,
             fontWeight: FontWeight.bold,
             foreground: Paint()
               ..style = .stroke
@@ -304,7 +306,11 @@ class OutlinedText extends StatelessWidget {
         ),
         Text(
           text,
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ],
     );
