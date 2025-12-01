@@ -16,7 +16,7 @@ class Chart extends StatefulWidget {
 
 class _ChartState extends State<Chart> {
   List<Position> highlights = [];
-  List<Types> defenseTypes = [Types.normal];
+  List<Types> defenseTypes = [];
   int selectedRow = 0;
 
   bool get fade => selectedRow != 0 || defenseTypes.isNotEmpty;

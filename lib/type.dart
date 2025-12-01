@@ -97,23 +97,23 @@ enum Types {
   String get shortName {
     switch (this) {
       case Types.normal:
-        return "NOR";
+        return "NRM";
       case Types.fire:
         return "FIR";
       case Types.water:
-        return "WAT";
+        return "WTR";
       case Types.electric:
-        return "ELE";
+        return "ELC";
       case Types.grass:
-        return "GRA";
+        return "GRS";
       case Types.ice:
         return "ICE";
       case Types.fighting:
-        return "FIG";
+        return "FGT";
       case Types.poison:
-        return "POI";
+        return "PSN";
       case Types.ground:
-        return "GRO";
+        return "GRD";
       case Types.flying:
         return "FLY";
       case Types.psychic:
@@ -121,17 +121,17 @@ enum Types {
       case Types.bug:
         return "BUG";
       case Types.rock:
-        return "ROC";
+        return "RCK";
       case Types.ghost:
         return "GHO";
       case Types.dragon:
-        return "DRA";
+        return "DRG";
       case Types.dark:
-        return "DAR";
+        return "DRK";
       case Types.steel:
-        return "STE";
+        return "STL";
       case Types.fairy:
-        return "FAI";
+        return "FRY";
     }
   }
 }
