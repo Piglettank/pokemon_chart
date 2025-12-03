@@ -1,6 +1,106 @@
+import 'package:flutter/material.dart';
 import 'package:pokemon_chart/type.dart';
 
 class Helper {
+  static String abbreviation(Types type) {
+    switch (type) {
+      case Types.normal:
+        return "NRM";
+      case Types.fire:
+        return "FIR";
+      case Types.water:
+        return "WTR";
+      case Types.electric:
+        return "ELC";
+      case Types.grass:
+        return "GRS";
+      case Types.ice:
+        return "ICE";
+      case Types.fighting:
+        return "FGT";
+      case Types.poison:
+        return "PSN";
+      case Types.ground:
+        return "GRD";
+      case Types.flying:
+        return "FLY";
+      case Types.psychic:
+        return "PSY";
+      case Types.bug:
+        return "BUG";
+      case Types.rock:
+        return "RCK";
+      case Types.ghost:
+        return "GHO";
+      case Types.dragon:
+        return "DRG";
+      case Types.dark:
+        return "DRK";
+      case Types.steel:
+        return "STL";
+      case Types.fairy:
+        return "FRY";
+    }
+  }
+
+  static Color typeColor(Types type) {
+    switch (type) {
+      case Types.normal:
+        return Color.fromARGB(255, 244, 237, 237);
+
+      case Types.fire:
+        return Color.fromARGB(255, 247, 100, 14);
+
+      case Types.water:
+        return Color.fromARGB(255, 28, 153, 220);
+
+      case Types.grass:
+        return Color.fromARGB(255, 92, 215, 92);
+
+      case Types.electric:
+        return Color.fromARGB(255, 236, 233, 85);
+
+      case Types.ice:
+        return Color.fromARGB(255, 127, 235, 245);
+
+      case Types.fighting:
+        return Color.fromARGB(255, 203, 141, 79);
+
+      case Types.poison:
+        return Color.fromARGB(255, 111, 38, 111);
+
+      case Types.ground:
+        return Color.fromARGB(255, 122, 91, 79);
+
+      case Types.flying:
+        return Color.fromARGB(255, 156, 197, 207);
+
+      case Types.psychic:
+        return Color.fromARGB(255, 208, 93, 175);
+
+      case Types.bug:
+        return Color.fromARGB(255, 128, 158, 65);
+
+      case Types.rock:
+        return Color.fromARGB(255, 106, 100, 70);
+
+      case Types.ghost:
+        return Color.fromARGB(255, 139, 113, 151);
+
+      case Types.dark:
+        return Color.fromARGB(255, 59, 54, 54);
+
+      case Types.steel:
+        return Color.fromARGB(255, 135, 147, 147);
+
+      case Types.dragon:
+        return Color.fromARGB(255, 68, 64, 144);
+
+      case Types.fairy:
+        return Color.fromARGB(255, 227, 135, 213);
+    }
+  }
+
   static double effectiveness(Types attack, Types defense) {
     switch (attack) {
       case Types.normal:

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:pokemon_chart/defense_overlay.dart';
 import 'package:pokemon_chart/extensions.dart';
@@ -74,9 +72,9 @@ class _ChartState extends State<Chart> {
                       ),
                       for (final type in Types.values)
                         Expanded(
-                          child: GestureDetector(
+                          child: TopRowType(
+                            type,
                             onTap: () => selectDefenseType(type),
-                            child: TopRowType(type),
                           ),
                         ),
                     ],
@@ -84,11 +82,11 @@ class _ChartState extends State<Chart> {
                   Expanded(
                     child: LayoutBuilder(
                       builder: (context, constrains) {
-                        return Row(
-                          children: [
-                            SizedBox(
-                              height: constrains.maxHeight,
-                              child: Column(
+                        return SizedBox(
+                          height: constrains.maxHeight,
+                          child: Row(
+                            children: [
+                              Column(
                                 crossAxisAlignment: .start,
                                 children: [
                                   for (final type in Types.values)
@@ -100,10 +98,7 @@ class _ChartState extends State<Chart> {
                                     ),
                                 ],
                               ),
-                            ),
-                            Expanded(
-                              child: SizedBox(
-                                height: constrains.maxHeight,
+                              Expanded(
                                 child: Column(
                                   children: [
                                     for (final attack in Types.values)
@@ -127,25 +122,9 @@ class _ChartState extends State<Chart> {
                                                 for (final defense
                                                     in Types.values)
                                                   Expanded(
-                                                    child: Builder(
-                                                      builder: (context) {
-                                                        final position =
-                                                            Position(
-                                                              Types.values
-                                                                  .indexOf(
-                                                                    attack,
-                                                                  ),
-                                                              Types.values
-                                                                  .indexOf(
-                                                                    defense,
-                                                                  ),
-                                                            );
-
-                                                        return EffectivenessBox(
-                                                          attack: attack,
-                                                          defense: defense,
-                                                        );
-                                                      },
+                                                    child: EffectivenessBox(
+                                                      attack: attack,
+                                                      defense: defense,
                                                     ),
                                                   ),
                                               ],
@@ -156,8 +135,8 @@ class _ChartState extends State<Chart> {
                                   ],
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         );
                       },
                     ),
@@ -261,23 +240,19 @@ class EffectivenessBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final effectiveness = defense.defend(attack);
 
-    if (effectiveness == 1) {
-      return SizedBox.expand();
-    }
-    Color color = Colors.red;
+    Color? color;
     if (effectiveness.isSuperEffective) {
-      color = Colors.green;
+      color = Colors.green[400]!.withAlpha(90);
     } else if (effectiveness.isImmune) {
-      color = Colors.grey;
+      color = Colors.grey[400]!.withAlpha(180);
+    } else if (effectiveness.isNotVeryEffective) {
+      color = Colors.red.withAlpha(80);
     }
 
     return Container(
       decoration: BoxDecoration(
-        color: color.withAlpha(50),
-        border: Border(
-          left: defense.isFirst ? BorderSide.none : _borderSide(),
-          right: defense.isLast ? BorderSide.none : _borderSide(),
-        ),
+        color: color,
+        border: Border(right: _borderSide()),
       ),
       child: Center(child: Text(effectiveness.asSymbol)),
     );
@@ -319,38 +294,51 @@ class OutlinedText extends StatelessWidget {
 
 class TopRowType extends StatelessWidget {
   final Types type;
-  const TopRowType(this.type, {super.key});
+  final VoidCallback? onTap;
+  const TopRowType(this.type, {this.onTap, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(right: type.isLast ? BorderSide.none : _borderSide()),
-        color: type.color,
-      ),
-      height: Chart.sidebarSize,
-      child: RotatedBox(
-        quarterTurns: 1,
-        child: Padding(
-          padding: .only(left: 8, top: 2, bottom: 2),
-          child: Align(
-            alignment: .centerLeft,
-            child: Row(
-              children: [
-                RotatedBox(
-                  quarterTurns: 3,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: .all(width: 1.5, color: Colors.black45),
-                      shape: .circle,
+    return Material(
+      color: type.color,
+      child: InkWell(
+        splashColor: Colors.black38,
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              right: type.isLast ? BorderSide.none : _borderSide(),
+            ),
+          ),
+          height: Chart.sidebarSize,
+          child: RotatedBox(
+            quarterTurns: 1,
+            child: Padding(
+              padding: .only(left: 8, top: 2, bottom: 2),
+              child: Align(
+                alignment: .centerLeft,
+                child: Row(
+                  children: [
+                    RotatedBox(
+                      quarterTurns: 3,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: .all(width: 1.5, color: Colors.black45),
+                          shape: .circle,
+                        ),
+                        child: Ink.image(
+                          image: AssetImage(type.imagePath()),
+                          width: 26,
+                          height: 26,
+                        ),
+                      ),
                     ),
-                    child: Image.asset(type.imagePath(), width: 26, height: 26),
-                  ),
-                ),
-                SizedBox(width: 8),
+                    SizedBox(width: 8),
 
-                OutlinedText(type.name.capitalize),
-              ],
+                    OutlinedText(type.name.capitalize),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
@@ -374,7 +362,7 @@ class Fade extends StatelessWidget {
 }
 
 BorderSide _borderSide() {
-  return BorderSide(color: Colors.black26);
+  return BorderSide(color: const Color.fromARGB(31, 23, 23, 23));
 }
 
 class Position {

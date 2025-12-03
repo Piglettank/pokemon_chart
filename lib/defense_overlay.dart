@@ -95,7 +95,7 @@ class DefenseOverlay extends StatelessWidget {
                                                 ),
                                                 SizedBox(height: 4),
                                                 OutlinedText(
-                                                  type.shortName,
+                                                  type.abbreviation,
                                                   fontSize: 12,
                                                 ),
                                               ],
