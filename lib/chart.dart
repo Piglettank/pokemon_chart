@@ -7,6 +7,7 @@ class Chart extends StatefulWidget {
   const Chart({super.key});
 
   static double get sidebarSize => 108;
+  static double get sidebarSizeSmall => 48;
 
   @override
   State<Chart> createState() => _ChartState();
@@ -52,7 +53,7 @@ class _ChartState extends State<Chart> {
       backgroundColor: fade ? Colors.black54 : null,
       body: Container(
         decoration: BoxDecoration(border: .fromBorderSide(_borderSide())),
-        margin: .all(24),
+        margin: MediaQuery.sizeOf(context).width > 600 ? .all(24) : .zero,
         child: Material(
           color: Colors.white,
           child: Stack(
@@ -93,7 +94,12 @@ class _ChartState extends State<Chart> {
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: () => selectRow(type.index),
-                                        child: _leftSideItem(type),
+                                        child: LeftSideItem(
+                                          type: type,
+                                          fade: fade,
+                                          selectedRow: selectedRow,
+                                          defenseTypes: defenseTypes,
+                                        ),
                                       ),
                                     ),
                                 ],
@@ -192,36 +198,60 @@ class _ChartState extends State<Chart> {
       ),
     );
   }
+}
 
-  Widget _leftSideItem(Types type) {
+class LeftSideItem extends StatelessWidget {
+  final Types type;
+  final bool fade;
+  final int selectedRow;
+  final List<Types> defenseTypes;
+  const LeftSideItem({
+    required this.type,
+    required this.fade,
+    required this.selectedRow,
+    required this.defenseTypes,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final small = MediaQuery.sizeOf(context).width < 600;
+    final size = small ? Chart.sidebarSizeSmall : Chart.sidebarSize;
+
     return Stack(
       children: [
         Container(
-          width: Chart.sidebarSize,
-          padding: .only(left: 8),
+          width: size,
+          padding: small ? .zero : .only(left: 8),
           decoration: BoxDecoration(
             color: type.color,
             border: Border(top: _borderSide(), right: _borderSide()),
           ),
-          child: Align(
-            alignment: .centerLeft,
-            child: Row(
-              spacing: 8,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    border: .all(width: 1.5, color: Colors.black45),
-                    shape: .circle,
+          child: small
+              ? Center(child: OutlinedText(type.abbreviation))
+              : Align(
+                  alignment: .centerLeft,
+                  child: Row(
+                    spacing: 8,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          border: .all(width: 1.5, color: Colors.black45),
+                          shape: .circle,
+                        ),
+                        child: Image.asset(
+                          type.imagePath(),
+                          width: 26,
+                          height: 26,
+                        ),
+                      ),
+                      OutlinedText(type.name.capitalize),
+                    ],
                   ),
-                  child: Image.asset(type.imagePath(), width: 26, height: 26),
                 ),
-                OutlinedText(type.name.capitalize),
-              ],
-            ),
-          ),
         ),
         if ((fade && selectedRow != type.index) || defenseTypes.isNotEmpty)
-          Container(width: Chart.sidebarSize, color: Colors.black54),
+          Container(width: size, color: Colors.black54),
       ],
     );
   }
