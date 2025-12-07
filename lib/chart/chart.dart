@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:pokemon_chart/defense_overlay.dart';
+import 'package:pokemon_chart/chart/defense_overlay.dart';
+import 'package:pokemon_chart/chart/effectiveness_box.dart';
 import 'package:pokemon_chart/extensions.dart';
+import 'package:pokemon_chart/helper.dart';
+import 'package:pokemon_chart/style.dart';
 import 'package:pokemon_chart/type.dart';
 
 class Chart extends StatefulWidget {
   const Chart({super.key});
 
   static double get sidebarSize => 108;
-  static double get sidebarSizeSmall => 48;
+  static double get sidebarSizeSmall => 38;
 
   @override
   State<Chart> createState() => _ChartState();
@@ -49,11 +52,13 @@ class _ChartState extends State<Chart> {
 
   @override
   Widget build(BuildContext context) {
+    bool mobile = Helper.isMobile(context);
+
     return Scaffold(
       backgroundColor: fade ? Colors.black54 : null,
       body: Container(
-        decoration: BoxDecoration(border: .fromBorderSide(_borderSide())),
-        margin: MediaQuery.sizeOf(context).width > 600 ? .all(24) : .zero,
+        decoration: BoxDecoration(border: .fromBorderSide(Style.borderSide())),
+        margin: mobile ? .zero : .all(24),
         child: Material(
           color: Colors.white,
           child: Stack(
@@ -64,11 +69,15 @@ class _ChartState extends State<Chart> {
                   Row(
                     children: [
                       Container(
-                        width: Chart.sidebarSize,
-                        height: Chart.sidebarSize,
+                        width: mobile
+                            ? Chart.sidebarSizeSmall
+                            : Chart.sidebarSize,
+                        height: mobile
+                            ? Chart.sidebarSizeSmall
+                            : Chart.sidebarSize,
                         decoration: BoxDecoration(
                           color: fade ? Colors.black54 : Colors.white,
-                          border: Border(right: _borderSide()),
+                          border: Border(right: Style.borderSide()),
                         ),
                       ),
                       for (final type in Types.values)
@@ -112,8 +121,8 @@ class _ChartState extends State<Chart> {
                                         child: Container(
                                           decoration: BoxDecoration(
                                             border: Border(
-                                              top: _borderSide(),
-                                              right: _borderSide(),
+                                              top: Style.borderSide(),
+                                              right: Style.borderSide(),
                                             ),
                                             color: attack.color.withAlpha(40),
                                           ),
@@ -129,8 +138,8 @@ class _ChartState extends State<Chart> {
                                                     in Types.values)
                                                   Expanded(
                                                     child: EffectivenessBox(
-                                                      attack: attack,
-                                                      defense: defense,
+                                                      effectiveness: defense
+                                                          .defend(attack),
                                                     ),
                                                   ),
                                               ],
@@ -158,11 +167,17 @@ class _ChartState extends State<Chart> {
                     });
                   },
                   child: Container(
-                    margin: .only(left: Chart.sidebarSize),
+                    margin: .only(
+                      left: mobile ? Chart.sidebarSizeSmall : Chart.sidebarSize,
+                    ),
                     child: Column(
                       children: [
                         if (defenseTypes.isNotEmpty)
-                          SizedBox(height: Chart.sidebarSize),
+                          SizedBox(
+                            height: mobile
+                                ? Chart.sidebarSizeSmall
+                                : Chart.sidebarSize,
+                          ),
                         Expanded(
                           flex: selectedRow,
                           child: Container(color: Colors.black54),
@@ -215,20 +230,25 @@ class LeftSideItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final small = MediaQuery.sizeOf(context).width < 600;
-    final size = small ? Chart.sidebarSizeSmall : Chart.sidebarSize;
+    final mobile = Helper.isMobile(context);
+    final size = mobile ? Chart.sidebarSizeSmall : Chart.sidebarSize;
 
     return Stack(
       children: [
         Container(
           width: size,
-          padding: small ? .zero : .only(left: 8),
+          padding: mobile ? .zero : .only(left: 8),
           decoration: BoxDecoration(
             color: type.color,
-            border: Border(top: _borderSide(), right: _borderSide()),
+            border: Border(top: Style.borderSide(), right: Style.borderSide()),
           ),
-          child: small
-              ? Center(child: OutlinedText(type.abbreviation))
+          child: mobile
+              ? Center(
+                  child: OutlinedText(
+                    type.abbreviation,
+                    fontSize: mobile ? 12 : 14,
+                  ),
+                )
               : Align(
                   alignment: .centerLeft,
                   child: Row(
@@ -253,38 +273,6 @@ class LeftSideItem extends StatelessWidget {
         if ((fade && selectedRow != type.index) || defenseTypes.isNotEmpty)
           Container(width: size, color: Colors.black54),
       ],
-    );
-  }
-}
-
-class EffectivenessBox extends StatelessWidget {
-  final Types attack;
-  final Types defense;
-  const EffectivenessBox({
-    required this.attack,
-    required this.defense,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final effectiveness = defense.defend(attack);
-
-    Color? color;
-    if (effectiveness.isSuperEffective) {
-      color = Colors.green[400]!.withAlpha(90);
-    } else if (effectiveness.isImmune) {
-      color = Colors.grey[400]!.withAlpha(180);
-    } else if (effectiveness.isNotVeryEffective) {
-      color = Colors.red.withAlpha(80);
-    }
-
-    return Container(
-      decoration: BoxDecoration(
-        color: color,
-        border: Border(right: _borderSide()),
-      ),
-      child: Center(child: Text(effectiveness.asSymbol)),
     );
   }
 }
@@ -329,6 +317,8 @@ class TopRowType extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mobile = Helper.isMobile(context);
+
     return Material(
       color: type.color,
       child: InkWell(
@@ -337,10 +327,10 @@ class TopRowType extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             border: Border(
-              right: type.isLast ? BorderSide.none : _borderSide(),
+              right: type.isLast ? BorderSide.none : Style.borderSide(),
             ),
           ),
-          height: Chart.sidebarSize,
+          height: mobile ? Chart.sidebarSizeSmall : Chart.sidebarSize,
           child: RotatedBox(
             quarterTurns: 1,
             child: Padding(
@@ -349,23 +339,28 @@ class TopRowType extends StatelessWidget {
                 alignment: .centerLeft,
                 child: Row(
                   children: [
-                    RotatedBox(
-                      quarterTurns: 3,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: .all(width: 1.5, color: Colors.black45),
-                          shape: .circle,
-                        ),
-                        child: Ink.image(
-                          image: AssetImage(type.imagePath()),
-                          width: 26,
-                          height: 26,
+                    if (!mobile) ...[
+                      RotatedBox(
+                        quarterTurns: 3,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: .all(width: 1.5, color: Colors.black45),
+                            shape: .circle,
+                          ),
+                          child: Ink.image(
+                            image: AssetImage(type.imagePath()),
+                            width: 26,
+                            height: 26,
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 8),
+                      SizedBox(width: 8),
+                    ],
 
-                    OutlinedText(type.name.capitalize),
+                    OutlinedText(
+                      mobile ? type.abbreviation : type.name.capitalize,
+                      fontSize: mobile ? 10 : 14,
+                    ),
                   ],
                 ),
               ),
@@ -389,10 +384,6 @@ class Fade extends StatelessWidget {
     }
     return Container(color: Colors.black38, child: child);
   }
-}
-
-BorderSide _borderSide() {
-  return BorderSide(color: const Color.fromARGB(31, 23, 23, 23));
 }
 
 class Position {

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:pokemon_chart/type.dart';
 
 class Helper {
+  static bool isMobile(BuildContext context) {
+    return MediaQuery.sizeOf(context).width < 600;
+  }
+
   static String abbreviation(Types type) {
     switch (type) {
       case Types.normal:

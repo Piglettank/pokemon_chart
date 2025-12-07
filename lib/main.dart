@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pokemon_chart/chart.dart';
+import 'package:pokemon_chart/chart/chart.dart';
 
 void main() {
   runApp(const MyApp());
