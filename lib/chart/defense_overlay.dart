@@ -162,7 +162,7 @@ class DefenseOverlay extends StatelessWidget {
 class _Defense extends StatelessWidget {
   final Types type;
   final Function(Types) onTap;
-  const _Defense({super.key, required this.type, required this.onTap});
+  const _Defense({required this.type, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -206,7 +206,7 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
 class _Attack extends StatelessWidget {
   final Types type;
   final double effectiveness;
-  const _Attack(this.type, this.effectiveness, {super.key});
+  const _Attack(this.type, this.effectiveness);
 
   @override
   Widget build(BuildContext context) {

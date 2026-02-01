@@ -1,16 +1,10 @@
-# pokemon_chart
+# Pokémon type chart
 
-A new Flutter project.
+An interactive Pokémon type chart. Made by me :D
 
-## Getting Started
+## How it works
 
-This project is a starting point for a Flutter application.
+- Tap a row to highlight it. Helps with readability.
+- Tap up to two defense types and it shows you which types are effective/not very effective.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+**Enjoy! 🔥🌱💧**
