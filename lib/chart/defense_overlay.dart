@@ -1,18 +1,26 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:pokemon_chart/chart/chart.dart';
 import 'package:pokemon_chart/chart/effectiveness_box.dart';
 import 'package:pokemon_chart/extensions.dart';
+import 'package:pokemon_chart/helper.dart';
+import 'package:pokemon_chart/style.dart';
 import 'package:pokemon_chart/type.dart';
 
 class DefenseOverlay extends StatelessWidget {
-  final List<Types> types;
+  final List<Types> defenseTypes;
   final VoidCallback? onTap;
-  const DefenseOverlay(this.types, {this.onTap, super.key});
+  final Function(Types) defenseOnTap;
+  const DefenseOverlay(
+    this.defenseTypes, {
+    required this.defenseOnTap,
+    this.onTap,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
+    const double defenseWidth = 96;
     final immuneTypes = <Types>[];
     final hyperEffectiveTypes = <Types>[];
     final superEffectiveTypes = <Types>[];
@@ -20,7 +28,7 @@ class DefenseOverlay extends StatelessWidget {
     final veryNotEffectiveTypes = <Types>[];
     for (final attack in Types.values) {
       double effectiveness = 1;
-      for (final defenseType in types) {
+      for (final defenseType in defenseTypes) {
         effectiveness *= defenseType.defend(attack);
       }
       if (effectiveness.isHyperEffective) {
@@ -37,8 +45,8 @@ class DefenseOverlay extends StatelessWidget {
     }
 
     return Positioned(
-      top: Chart.sidebarSize,
-      left: Chart.sidebarSize,
+      top: Helper.sidebarSize(context),
+      left: Helper.isMobile(context) ? 4 : Chart.sidebarSize,
       right: 0,
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -64,16 +72,6 @@ class DefenseOverlay extends StatelessWidget {
                         spacing: 8,
                         mainAxisSize: .min,
                         children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 114,
-                                child: OutlinedText('Defense'),
-                              ),
-                              SizedBox(width: 24),
-                              OutlinedText('Attack'),
-                            ],
-                          ),
                           Expanded(
                             child: ScrollConfiguration(
                               behavior: MyCustomScrollBehavior(),
@@ -83,55 +81,55 @@ class DefenseOverlay extends StatelessWidget {
                                 physics: AlwaysScrollableScrollPhysics(),
                                 children: [
                                   SizedBox(
-                                    width: 114,
+                                    width: defenseWidth,
                                     child: Column(
-                                      mainAxisAlignment: .center,
+                                      spacing: 8,
                                       crossAxisAlignment: .start,
                                       children: [
-                                        SizedBox(height: 8),
-                                        Row(
-                                          spacing: 8,
-                                          children: [
-                                            for (final type in types)
-                                              Column(
-                                                children: [
-                                                  Image.asset(
-                                                    type.imagePath(),
-                                                    width: 48,
-                                                    height: 48,
-                                                  ),
-                                                  SizedBox(height: 4),
-                                                  OutlinedText(
-                                                    type.abbreviation,
-                                                    fontSize: 12,
-                                                  ),
-                                                ],
-                                              ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 12),
+                                        OutlinedText('Defense'),
+                                        for (final type in defenseTypes)
+                                          _Defense(
+                                            type: type,
+                                            onTap: defenseOnTap,
+                                          ),
                                       ],
                                     ),
                                   ),
-                                  SizedBox(width: 24),
-                                  for (final type in hyperEffectiveTypes)
-                                    _Attack(type, 4),
-                                  if (hyperEffectiveTypes.isNotEmpty)
-                                    SizedBox(width: 8),
-                                  for (final type in superEffectiveTypes)
-                                    _Attack(type, 2),
-                                  if (superEffectiveTypes.isNotEmpty)
-                                    SizedBox(width: 8),
-                                  for (final type in notVeryEffectiveTypes)
-                                    _Attack(type, 0.5),
-                                  if (notVeryEffectiveTypes.isNotEmpty)
-                                    SizedBox(width: 8),
-                                  for (final type in veryNotEffectiveTypes)
-                                    _Attack(type, 0.25),
-                                  if (veryNotEffectiveTypes.isNotEmpty)
-                                    SizedBox(width: 8),
-                                  for (final type in immuneTypes)
-                                    _Attack(type, 0),
+                                  SizedBox(width: 20),
+                                  Column(
+                                    spacing: 8,
+                                    crossAxisAlignment: .start,
+                                    children: [
+                                      OutlinedText('Attack'),
+                                      Row(
+                                        children: [
+                                          for (final type
+                                              in hyperEffectiveTypes)
+                                            _Attack(type, 4),
+                                          if (hyperEffectiveTypes.isNotEmpty)
+                                            SizedBox(width: 8),
+                                          for (final type
+                                              in superEffectiveTypes)
+                                            _Attack(type, 2),
+                                          if (superEffectiveTypes.isNotEmpty)
+                                            SizedBox(width: 8),
+                                          for (final type
+                                              in notVeryEffectiveTypes)
+                                            _Attack(type, 0.5),
+                                          if (notVeryEffectiveTypes.isNotEmpty)
+                                            SizedBox(width: 8),
+                                          for (final type
+                                              in veryNotEffectiveTypes)
+                                            _Attack(type, 0.25),
+                                          if (veryNotEffectiveTypes.isNotEmpty)
+                                            SizedBox(width: 8),
+                                          for (final type in immuneTypes)
+                                            _Attack(type, 0),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+
                                   SizedBox(width: 24),
                                 ],
                               ),
@@ -143,6 +141,8 @@ class DefenseOverlay extends StatelessWidget {
                         top: 0,
                         right: 0,
                         child: IconButton(
+                          visualDensity: .compact,
+                          padding: .zero,
                           onPressed: onTap,
                           icon: Icon(Icons.close),
                         ),
@@ -159,13 +159,47 @@ class DefenseOverlay extends StatelessWidget {
   }
 }
 
+class _Defense extends StatelessWidget {
+  final Types type;
+  final Function(Types) onTap;
+  const _Defense({super.key, required this.type, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final Color borderColor = Color.lerp(type.color, Colors.black, 0.5)!;
+
+    return Material(
+      borderRadius: .circular(8),
+      color: type.color,
+      child: InkWell(
+        onTap: () => onTap(type),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: .circular(8),
+            border: .all(color: borderColor),
+          ),
+          padding: .all(8),
+          child: Row(
+            mainAxisSize: .min,
+            children: [
+              Image.asset(type.imagePath(), width: 24, height: 24),
+              SizedBox(width: 6),
+              OutlinedText(type.abbreviation, fontSize: 12),
+              Spacer(),
+              Icon(Icons.close_rounded, size: 15),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
-  // Override behavior methods and getters like dragDevices
   @override
   Set<PointerDeviceKind> get dragDevices => {
     PointerDeviceKind.touch,
     PointerDeviceKind.mouse,
-    // etc.
   };
 }
 
@@ -176,18 +210,28 @@ class _Attack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TopRowType(type),
-        SizedBox(
-          height: 24,
-          width: 34,
-          child: EffectivenessBox(
-            effectiveness: effectiveness,
-            border: Border(),
-          ),
+    return Align(
+      alignment: .topCenter,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.fromBorderSide(Style.borderSideBlend(type.color)),
         ),
-      ],
+        child: Column(
+          mainAxisSize: .min,
+          children: [
+            TopRowType(type),
+            Container(
+              color: type.color.withAlpha(40),
+              height: 24,
+              width: Helper.isMobile(context) ? 19 : 34,
+              child: EffectivenessBox(
+                effectiveness: effectiveness,
+                border: Border(),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

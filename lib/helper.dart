@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:pokemon_chart/chart/chart.dart';
 import 'package:pokemon_chart/type.dart';
 
 class Helper {
   static bool isMobile(BuildContext context) {
     return MediaQuery.sizeOf(context).width < 600;
+  }
+
+  static double sidebarSize(BuildContext context) {
+    return isMobile(context) ? Chart.sidebarSizeSmall : Chart.sidebarSize;
   }
 
   static String abbreviation(Types type) {
