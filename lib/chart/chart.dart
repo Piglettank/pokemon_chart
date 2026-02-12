@@ -3,6 +3,7 @@ import 'package:pokemon_chart/chart/defense_overlay.dart';
 import 'package:pokemon_chart/chart/effectiveness_box.dart';
 import 'package:pokemon_chart/extensions.dart';
 import 'package:pokemon_chart/helper.dart';
+import 'package:pokemon_chart/state.dart';
 import 'package:pokemon_chart/style.dart';
 import 'package:pokemon_chart/type.dart';
 
@@ -17,7 +18,6 @@ class Chart extends StatefulWidget {
 }
 
 class _ChartState extends State<Chart> {
-  List<Position> highlights = [];
   List<Types> defenseTypes = [];
   int selectedRow = 0;
 
@@ -66,186 +66,208 @@ class _ChartState extends State<Chart> {
       },
       child: Scaffold(
         backgroundColor: fade ? Colors.black54 : null,
-        body: Center(
-          child: Container(
-            decoration: BoxDecoration(
-              border: .fromBorderSide(Style.borderSide()),
-            ),
-            margin: mobile ? .zero : .all(24),
-            constraints: BoxConstraints(maxWidth: 880),
-            child: Material(
-              color: Colors.white,
-              child: Stack(
-                fit: .expand,
-                children: [
-                  Column(
-                    children: [
-                      Row(
-                        children: [
-                          Stack(
-                            children: [
-                              Container(
-                                width: mobile
-                                    ? Chart.sidebarSizeSmall
-                                    : Chart.sidebarSize,
-                                height: mobile
-                                    ? Chart.sidebarSizeSmall
-                                    : Chart.sidebarSize,
-                                decoration: BoxDecoration(
-                                  color: fade ? Colors.black54 : Colors.white,
-                                  border: Border(right: Style.borderSide()),
-                                ),
-                              ),
-                              if (!Helper.isMobile(context)) ...[
-                                Positioned(
-                                  bottom: 4,
-                                  left: 8,
-                                  child: Text('Attack'),
-                                ),
-                                Positioned(
-                                  right: 4,
-                                  top: 8,
-                                  child: RotatedBox(
-                                    quarterTurns: 1,
-                                    child: Text('Defense'),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                          for (final type in Types.values)
-                            Expanded(
-                              child: TopRowType(
-                                type,
-                                onTap: () => selectDefenseType(type),
-                              ),
-                            ),
-                        ],
-                      ),
-                      Expanded(
-                        child: LayoutBuilder(
-                          builder: (context, constrains) {
-                            return SizedBox(
-                              height: constrains.maxHeight,
-                              child: Row(
-                                children: [
-                                  Column(
-                                    crossAxisAlignment: .start,
-                                    children: [
-                                      for (final type in Types.values)
-                                        Expanded(
-                                          child: GestureDetector(
-                                            onTap: () => selectRow(type.index),
-                                            child: LeftSideItem(
-                                              type: type,
-                                              fade: fade,
-                                              selectedRow: selectedRow,
-                                              defenseTypes: defenseTypes,
-                                            ),
-                                          ),
+        body: Column(
+          children: [
+            for (final type in Types.values)
+              GestureDetector(
+                onTap: () {
+                  AppState.get(listen: false).defenseTypes = [type];
+                },
+                child: Text(type.name),
+              ),
+            for (final type in AppState.get().defenseTypes) Text(type.name),
+            Expanded(
+              child: Center(
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: .fromBorderSide(Style.borderSide()),
+                  ),
+                  margin: mobile ? .zero : .all(24),
+                  constraints: BoxConstraints(maxWidth: 880),
+                  child: Material(
+                    color: Colors.white,
+                    child: Stack(
+                      fit: .expand,
+                      children: [
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                Stack(
+                                  children: [
+                                    Container(
+                                      width: mobile
+                                          ? Chart.sidebarSizeSmall
+                                          : Chart.sidebarSize,
+                                      height: mobile
+                                          ? Chart.sidebarSizeSmall
+                                          : Chart.sidebarSize,
+                                      decoration: BoxDecoration(
+                                        color: fade
+                                            ? Colors.black54
+                                            : Colors.white,
+                                        border: Border(
+                                          right: Style.borderSide(),
                                         ),
+                                      ),
+                                    ),
+                                    if (!Helper.isMobile(context)) ...[
+                                      Positioned(
+                                        bottom: 4,
+                                        left: 8,
+                                        child: Text('Attack'),
+                                      ),
+                                      Positioned(
+                                        right: 4,
+                                        top: 8,
+                                        child: RotatedBox(
+                                          quarterTurns: 1,
+                                          child: Text('Defense'),
+                                        ),
+                                      ),
                                     ],
-                                  ),
+                                  ],
+                                ),
+                                for (final type in Types.values)
                                   Expanded(
-                                    child: Column(
-                                      children: [
-                                        for (final attack in Types.values)
-                                          Expanded(
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                border: Border(
-                                                  top: Style.borderSide(),
-                                                  right: Style.borderSide(),
-                                                ),
-                                                color: attack.color.withAlpha(
-                                                  40,
-                                                ),
-                                              ),
-
-                                              child: GestureDetector(
-                                                behavior: .opaque,
-                                                onTap: () {
-                                                  selectRow(attack.index);
-                                                },
-                                                child: Row(
-                                                  children: [
-                                                    for (final defense
-                                                        in Types.values)
-                                                      Expanded(
-                                                        child: EffectivenessBox(
-                                                          effectiveness: defense
-                                                              .defend(attack),
-                                                        ),
-                                                      ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                      ],
+                                    child: TopRowType(
+                                      type,
+                                      onTap: () => selectDefenseType(type),
                                     ),
                                   ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (fade)
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedRow = 0;
-                          defenseTypes.clear();
-                        });
-                      },
-                      child: Container(
-                        margin: .only(
-                          left: mobile
-                              ? Chart.sidebarSizeSmall
-                              : Chart.sidebarSize,
-                        ),
-                        child: Column(
-                          children: [
-                            if (defenseTypes.isNotEmpty)
-                              SizedBox(
-                                height: mobile
-                                    ? Chart.sidebarSizeSmall
-                                    : Chart.sidebarSize,
-                              ),
-                            Expanded(
-                              flex: selectedRow,
-                              child: Container(color: Colors.black54),
+                              ],
                             ),
-                            if (selectedRow > 0) ...[
-                              Row(
-                                children: [
-                                  for (final type in Types.values)
-                                    Expanded(child: TopRowType(type)),
-                                ],
-                              ),
-                              Spacer(),
-                            ],
                             Expanded(
-                              flex: Types.values.length - selectedRow - 1,
-                              child: Container(color: Colors.black54),
+                              child: LayoutBuilder(
+                                builder: (context, constrains) {
+                                  return SizedBox(
+                                    height: constrains.maxHeight,
+                                    child: Row(
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: .start,
+                                          children: [
+                                            for (final type in Types.values)
+                                              Expanded(
+                                                child: GestureDetector(
+                                                  onTap: () =>
+                                                      selectRow(type.index),
+                                                  child: LeftSideItem(
+                                                    type: type,
+                                                    fade: fade,
+                                                    selectedRow: selectedRow,
+                                                    defenseTypes: defenseTypes,
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            children: [
+                                              for (final attack in Types.values)
+                                                Expanded(
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      border: Border(
+                                                        top: Style.borderSide(),
+                                                        right:
+                                                            Style.borderSide(),
+                                                      ),
+                                                      color: attack.color
+                                                          .withAlpha(40),
+                                                    ),
+
+                                                    child: GestureDetector(
+                                                      behavior: .opaque,
+                                                      onTap: () {
+                                                        selectRow(attack.index);
+                                                      },
+                                                      child: Row(
+                                                        children: [
+                                                          for (final defense
+                                                              in Types.values)
+                                                            Expanded(
+                                                              child: EffectivenessBox(
+                                                                effectiveness:
+                                                                    defense
+                                                                        .defend(
+                                                                          attack,
+                                                                        ),
+                                                              ),
+                                                            ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           ],
                         ),
-                      ),
+                        if (fade)
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedRow = 0;
+                                defenseTypes.clear();
+                              });
+                            },
+                            child: Container(
+                              margin: .only(
+                                left: mobile
+                                    ? Chart.sidebarSizeSmall
+                                    : Chart.sidebarSize,
+                              ),
+                              child: Column(
+                                children: [
+                                  if (defenseTypes.isNotEmpty)
+                                    SizedBox(
+                                      height: mobile
+                                          ? Chart.sidebarSizeSmall
+                                          : Chart.sidebarSize,
+                                    ),
+                                  Expanded(
+                                    flex: selectedRow,
+                                    child: Container(color: Colors.black54),
+                                  ),
+                                  if (selectedRow > 0) ...[
+                                    Row(
+                                      children: [
+                                        for (final type in Types.values)
+                                          Expanded(child: TopRowType(type)),
+                                      ],
+                                    ),
+                                    Spacer(),
+                                  ],
+                                  Expanded(
+                                    flex: Types.values.length - selectedRow - 1,
+                                    child: Container(color: Colors.black54),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        if (defenseTypes.isNotEmpty)
+                          DefenseOverlay(
+                            defenseTypes,
+                            defenseOnTap: selectDefenseType,
+                            onTap: clearSelection,
+                          ),
+                      ],
                     ),
-                  if (defenseTypes.isNotEmpty)
-                    DefenseOverlay(
-                      defenseTypes,
-                      defenseOnTap: selectDefenseType,
-                      onTap: clearSelection,
-                    ),
-                ],
+                  ),
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -421,9 +443,4 @@ class Fade extends StatelessWidget {
     }
     return Container(color: Colors.black38, child: child);
   }
-}
-
-class Position {
-  int x, y;
-  Position(this.x, this.y);
 }
