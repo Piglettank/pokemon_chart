@@ -24,6 +24,7 @@ class _ChartState extends State<Chart> {
   bool get fade => selectedRow != 0 || defenseTypes.isNotEmpty;
 
   void selectRow(int row) {
+    final state = AppState.get(listen: false);
     if (defenseTypes.isNotEmpty) {
       defenseTypes.clear();
     }
@@ -32,13 +33,17 @@ class _ChartState extends State<Chart> {
     } else {
       selectedRow = row;
     }
-    setState(() {});
+
+    state.setSelectedRow(selectedRow);
+    state.setDefenseTypes(defenseTypes);
   }
 
   void selectDefenseType(Types type) {
+    final state = AppState.get(listen: false);
+
     if (defenseTypes.contains(type)) {
       defenseTypes.remove(type);
-      setState(() {});
+      state.setDefenseTypes(defenseTypes);
       return;
     }
 
@@ -47,18 +52,23 @@ class _ChartState extends State<Chart> {
     }
 
     defenseTypes.add(type);
-    setState(() {});
+
+    state.setDefenseTypes(defenseTypes);
   }
 
   void clearSelection() {
-    defenseTypes.clear();
-    selectedRow = 0;
-    setState(() {});
+    final state = AppState.get(listen: false);
+    state.setDefenseTypes([]);
+    state.setSelectedRow(0);
   }
 
   @override
   Widget build(BuildContext context) {
     bool mobile = Helper.isMobile(context);
+    defenseTypes = AppState.get().defenseTypes;
+    selectedRow = AppState.get().selectedRow;
+    print(selectedRow);
+    print(defenseTypes);
 
     return GestureDetector(
       onTap: () {
@@ -68,14 +78,6 @@ class _ChartState extends State<Chart> {
         backgroundColor: fade ? Colors.black54 : null,
         body: Column(
           children: [
-            for (final type in Types.values)
-              GestureDetector(
-                onTap: () {
-                  AppState.get(listen: false).defenseTypes = [type];
-                },
-                child: Text(type.name),
-              ),
-            for (final type in AppState.get().defenseTypes) Text(type.name),
             Expanded(
               child: Center(
                 child: Container(
@@ -215,10 +217,7 @@ class _ChartState extends State<Chart> {
                         if (fade)
                           GestureDetector(
                             onTap: () {
-                              setState(() {
-                                selectedRow = 0;
-                                defenseTypes.clear();
-                              });
+                              selectRow(0);
                             },
                             child: Container(
                               margin: .only(
