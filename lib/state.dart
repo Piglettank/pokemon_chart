@@ -3,30 +3,58 @@ import 'package:provider/provider.dart';
 import 'package:pokemon_chart/type.dart';
 
 class AppState with ChangeNotifier {
+  //TODO(me): Remove FAB when a row is selected
   static BuildContext? stateContext;
 
-  static AppState get({bool listen = true}) {
-    return Provider.of<AppState>(stateContext!, listen: listen);
+  static AppState of(BuildContext context, {bool listen = true}) {
+    return Provider.of<AppState>(context, listen: listen);
   }
 
-  List<Types> _defenseTypes = [];
+  final List<Types> _defenseTypes = [];
   List<Types> get defenseTypes => _defenseTypes;
-  void setDefenseTypes(List<Types> types, {bool notify = true}) {
-    _defenseTypes = types;
+  void selectDefenseType(Types type, {bool notify = true}) {
+    if (_defenseTypes.contains(type)) {
+      _defenseTypes.remove(type);
+      _notify(notify);
+      return;
+    }
+
+    if (_defenseTypes.length == 2) {
+      _defenseTypes.clear();
+    }
+
+    _defenseTypes.add(type);
+
+    _notify(notify);
+  }
+
+  void clearDefenseTypes({bool notify = true}) {
+    _defenseTypes.clear();
     _notify(notify);
   }
 
   int _selectedRow = 0;
   int get selectedRow => _selectedRow;
   void setSelectedRow(int row, {bool notify = true}) {
+    if (row == _selectedRow) {
+      clearSelectedRow();
+      return;
+    }
+
     _selectedRow = row;
     _notify(notify);
   }
 
+  void clearSelectedRow() {
+    _selectedRow = 0;
+    _notify(true);
+  }
+
   void _notify(bool notify) {
     if (notify) {
-      print('notifyListeners');
       notifyListeners();
     }
   }
+
+  bool get fade => selectedRow != 0 || defenseTypes.isNotEmpty;
 }

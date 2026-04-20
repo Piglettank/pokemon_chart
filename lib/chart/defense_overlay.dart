@@ -2,21 +2,22 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:pokemon_chart/chart/chart.dart';
 import 'package:pokemon_chart/chart/effectiveness_box.dart';
+import 'package:pokemon_chart/chart/type_vertical.dart';
 import 'package:pokemon_chart/extensions.dart';
 import 'package:pokemon_chart/helper.dart';
-import 'package:pokemon_chart/style.dart';
+import 'package:pokemon_chart/state.dart';
 import 'package:pokemon_chart/type.dart';
 
 class DefenseOverlay extends StatelessWidget {
   final List<Types> defenseTypes;
-  final VoidCallback? onTap;
   final Function(Types) defenseOnTap;
   const DefenseOverlay(
     this.defenseTypes, {
     required this.defenseOnTap,
-    this.onTap,
     super.key,
   });
+
+  static double height = 224;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +27,9 @@ class DefenseOverlay extends StatelessWidget {
     final superEffectiveTypes = <Types>[];
     final notVeryEffectiveTypes = <Types>[];
     final veryNotEffectiveTypes = <Types>[];
+
+    final mobile = Helper.isMobile(context);
+
     for (final attack in Types.values) {
       double effectiveness = 1;
       for (final defenseType in defenseTypes) {
@@ -44,14 +48,14 @@ class DefenseOverlay extends StatelessWidget {
       }
     }
 
-    return Positioned(
+    return Positioned.fill(
       top: Helper.sidebarSize(context),
-      left: Helper.isMobile(context) ? 4 : Chart.sidebarSize,
-      right: 0,
+      left: mobile ? 12 : Chart.sidebarSize,
+      right: mobile ? 12 : 0,
       child: LayoutBuilder(
         builder: (context, constraints) {
           return GestureDetector(
-            onTap: onTap,
+            behavior: HitTestBehavior.opaque,
             child: Padding(
               padding: .symmetric(vertical: 12),
               child: Material(
@@ -64,7 +68,7 @@ class DefenseOverlay extends StatelessWidget {
                     borderRadius: .circular(6),
                     border: .all(color: Colors.black26),
                   ),
-                  height: 204,
+                  height: mobile ? 400 : height,
                   width: constraints.maxWidth,
                   child: Stack(
                     children: [
@@ -74,10 +78,9 @@ class DefenseOverlay extends StatelessWidget {
                         children: [
                           Expanded(
                             child: ScrollConfiguration(
-                              behavior: MyCustomScrollBehavior(),
+                              behavior: DragScrollBehavior(),
                               child: ListView(
                                 scrollDirection: .horizontal,
-                                primary: true,
                                 physics: AlwaysScrollableScrollPhysics(),
                                 children: [
                                   SizedBox(
@@ -143,7 +146,10 @@ class DefenseOverlay extends StatelessWidget {
                         child: IconButton(
                           visualDensity: .compact,
                           padding: .zero,
-                          onPressed: onTap,
+                          onPressed: () => AppState.of(
+                            context,
+                            listen: false,
+                          ).clearDefenseTypes(),
                           icon: Icon(Icons.close),
                         ),
                       ),
@@ -195,7 +201,7 @@ class _Defense extends StatelessWidget {
   }
 }
 
-class MyCustomScrollBehavior extends MaterialScrollBehavior {
+class DragScrollBehavior extends MaterialScrollBehavior {
   @override
   Set<PointerDeviceKind> get dragDevices => {
     PointerDeviceKind.touch,
@@ -210,24 +216,25 @@ class _Attack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Color borderColor = Color.lerp(type.color, Colors.black, 0.5)!;
+    final bool mobile = Helper.isMobile(context);
+
     return Align(
       alignment: .topCenter,
       child: Container(
-        decoration: BoxDecoration(
-          border: Border.fromBorderSide(Style.borderSideBlend(type.color)),
-        ),
+        decoration: BoxDecoration(border: Border.all(color: borderColor)),
         child: Column(
           mainAxisSize: .min,
           children: [
-            TopRowType(type),
+            TypeVertical(type),
             Container(
-              color: type.color.withAlpha(40),
-              height: 24,
-              width: Helper.isMobile(context) ? 19 : 34,
-              child: EffectivenessBox(
-                effectiveness: effectiveness,
-                border: Border(),
+              decoration: BoxDecoration(
+                color: type.color.withAlpha(40),
+                border: Border(top: BorderSide(color: borderColor)),
               ),
+              height: mobile ? 26 : 40,
+              width: mobile ? 18 : 34,
+              child: EffectivenessBox(effectiveness: effectiveness),
             ),
           ],
         ),
