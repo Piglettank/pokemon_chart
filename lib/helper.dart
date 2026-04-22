@@ -7,6 +7,25 @@ class Helper {
     return MediaQuery.sizeOf(context).width < 600;
   }
 
+  /// Returns a map of effectiveness:
+  ///
+  /// Key is 4, 2, 0.5, 0.25, 0 (effectiveness)
+  /// Value is a list of Types
+  static Map<double, List<Types>> attackGroups(List<Types> defenseTypes) {
+    final groups = <double, List<Types>>{4: [], 2: [], 0.5: [], 0.25: [], 0: []};
+
+    for (final attack in Types.values) {
+      double effectiveness = 1;
+      for (final defenseType in defenseTypes) {
+        effectiveness *= defenseType.defend(attack);
+      }
+      if (groups.containsKey(effectiveness)) {
+        groups[effectiveness]!.add(attack);
+      }
+    }
+    return groups;
+  }
+
   static double sidebarSize(BuildContext context) {
     return isMobile(context) ? Chart.sidebarSizeSmall : Chart.sidebarSize;
   }

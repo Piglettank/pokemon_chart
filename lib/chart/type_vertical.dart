@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokemon_chart/chart/chart.dart';
+import 'package:pokemon_chart/components/outlined_text.dart';
 import 'package:pokemon_chart/extensions.dart';
 import 'package:pokemon_chart/helper.dart';
 import 'package:pokemon_chart/style.dart';
@@ -49,7 +50,7 @@ class TypeVertical extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                     ],
 
                     OutlinedText(

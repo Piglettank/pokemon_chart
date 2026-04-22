@@ -11,11 +11,11 @@ extension PokemonDoubleExtensions on double {
   }
 
   bool get isSuperEffective {
-    return this > 1;
+    return this == 2;
   }
 
   bool get isNotVeryEffective {
-    return this > 0 && this < 1;
+    return this == 0.5;
   }
 
   bool get isVeryNotEffective {

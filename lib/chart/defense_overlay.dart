@@ -1,9 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:pokemon_chart/chart/chart.dart';
+import 'package:pokemon_chart/components/outlined_text.dart';
 import 'package:pokemon_chart/chart/effectiveness_box.dart';
 import 'package:pokemon_chart/chart/type_vertical.dart';
-import 'package:pokemon_chart/extensions.dart';
 import 'package:pokemon_chart/helper.dart';
 import 'package:pokemon_chart/state.dart';
 import 'package:pokemon_chart/type.dart';
@@ -11,44 +11,17 @@ import 'package:pokemon_chart/type.dart';
 class DefenseOverlay extends StatelessWidget {
   final List<Types> defenseTypes;
   final Function(Types) defenseOnTap;
-  const DefenseOverlay(
-    this.defenseTypes, {
-    required this.defenseOnTap,
-    super.key,
-  });
+  const DefenseOverlay(this.defenseTypes, {required this.defenseOnTap, super.key});
 
   static double height = 224;
 
   @override
   Widget build(BuildContext context) {
     const double defenseWidth = 96;
-    final immuneTypes = <Types>[];
-    final hyperEffectiveTypes = <Types>[];
-    final superEffectiveTypes = <Types>[];
-    final notVeryEffectiveTypes = <Types>[];
-    final veryNotEffectiveTypes = <Types>[];
-
     final mobile = Helper.isMobile(context);
+    final groups = Helper.attackGroups(defenseTypes);
 
-    for (final attack in Types.values) {
-      double effectiveness = 1;
-      for (final defenseType in defenseTypes) {
-        effectiveness *= defenseType.defend(attack);
-      }
-      if (effectiveness.isHyperEffective) {
-        hyperEffectiveTypes.add(attack);
-      } else if (effectiveness.isVeryNotEffective) {
-        veryNotEffectiveTypes.add(attack);
-      } else if (effectiveness.isSuperEffective) {
-        superEffectiveTypes.add(attack);
-      } else if (effectiveness.isNotVeryEffective) {
-        notVeryEffectiveTypes.add(attack);
-      } else if (effectiveness.isImmune) {
-        immuneTypes.add(attack);
-      }
-    }
-
-    return Positioned.fill(
+    return Positioned(
       top: Helper.sidebarSize(context),
       left: mobile ? 12 : Chart.sidebarSize,
       right: mobile ? 12 : 0,
@@ -91,10 +64,7 @@ class DefenseOverlay extends StatelessWidget {
                                       children: [
                                         OutlinedText('Defense'),
                                         for (final type in defenseTypes)
-                                          _Defense(
-                                            type: type,
-                                            onTap: defenseOnTap,
-                                          ),
+                                          _Defense(type: type, onTap: defenseOnTap),
                                       ],
                                     ),
                                   ),
@@ -106,28 +76,12 @@ class DefenseOverlay extends StatelessWidget {
                                       OutlinedText('Attack'),
                                       Row(
                                         children: [
-                                          for (final type
-                                              in hyperEffectiveTypes)
-                                            _Attack(type, 4),
-                                          if (hyperEffectiveTypes.isNotEmpty)
-                                            SizedBox(width: 8),
-                                          for (final type
-                                              in superEffectiveTypes)
-                                            _Attack(type, 2),
-                                          if (superEffectiveTypes.isNotEmpty)
-                                            SizedBox(width: 8),
-                                          for (final type
-                                              in notVeryEffectiveTypes)
-                                            _Attack(type, 0.5),
-                                          if (notVeryEffectiveTypes.isNotEmpty)
-                                            SizedBox(width: 8),
-                                          for (final type
-                                              in veryNotEffectiveTypes)
-                                            _Attack(type, 0.25),
-                                          if (veryNotEffectiveTypes.isNotEmpty)
-                                            SizedBox(width: 8),
-                                          for (final type in immuneTypes)
-                                            _Attack(type, 0),
+                                          for (final entry in groups.entries)
+                                            if (entry.value.isNotEmpty) ...[
+                                              for (final type in entry.value)
+                                                _Attack(type, entry.key),
+                                              SizedBox(width: 8),
+                                            ],
                                         ],
                                       ),
                                     ],
@@ -146,10 +100,7 @@ class DefenseOverlay extends StatelessWidget {
                         child: IconButton(
                           visualDensity: .compact,
                           padding: .zero,
-                          onPressed: () => AppState.of(
-                            context,
-                            listen: false,
-                          ).clearDefenseTypes(),
+                          onPressed: () => AppState.of(context, listen: false).clearDefenseTypes(),
                           icon: Icon(Icons.close),
                         ),
                       ),
@@ -203,10 +154,7 @@ class _Defense extends StatelessWidget {
 
 class DragScrollBehavior extends MaterialScrollBehavior {
   @override
-  Set<PointerDeviceKind> get dragDevices => {
-    PointerDeviceKind.touch,
-    PointerDeviceKind.mouse,
-  };
+  Set<PointerDeviceKind> get dragDevices => {PointerDeviceKind.touch, PointerDeviceKind.mouse};
 }
 
 class _Attack extends StatelessWidget {

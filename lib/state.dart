@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:pokemon_chart/type.dart';
 
 class AppState with ChangeNotifier {
-  //TODO(me): Remove FAB when a row is selected
   static BuildContext? stateContext;
 
   static AppState of(BuildContext context, {bool listen = true}) {
@@ -33,20 +32,15 @@ class AppState with ChangeNotifier {
     _notify(notify);
   }
 
-  int _selectedRow = 0;
-  int get selectedRow => _selectedRow;
+  int? _selectedRow;
+  int? get selectedRow => _selectedRow;
   void setSelectedRow(int row, {bool notify = true}) {
-    if (row == _selectedRow) {
-      clearSelectedRow();
-      return;
-    }
-
     _selectedRow = row;
     _notify(notify);
   }
 
   void clearSelectedRow() {
-    _selectedRow = 0;
+    _selectedRow = null;
     _notify(true);
   }
 
@@ -56,5 +50,5 @@ class AppState with ChangeNotifier {
     }
   }
 
-  bool get fade => selectedRow != 0 || defenseTypes.isNotEmpty;
+  bool get fade => selectedRow != null || defenseTypes.isNotEmpty;
 }

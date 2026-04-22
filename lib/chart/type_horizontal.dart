@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:pokemon_chart/chart/chart.dart';
+import 'package:pokemon_chart/components/outlined_text.dart';
 import 'package:pokemon_chart/extensions.dart';
 import 'package:pokemon_chart/helper.dart';
 import 'package:pokemon_chart/state.dart';
 import 'package:pokemon_chart/style.dart';
 import 'package:pokemon_chart/type.dart';
+
 
 class TypeHorizontal extends StatelessWidget {
   final Types type;
@@ -19,7 +20,7 @@ class TypeHorizontal extends StatelessWidget {
     final defenseTypes = state.defenseTypes;
     final selectedRow = state.selectedRow;
     final fade =
-        (selectedRow != 0 && selectedRow != type.index) ||
+        (selectedRow != null && selectedRow != type.index) ||
         defenseTypes.isNotEmpty;
 
     return Stack(
