@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 176, 62, 0)),
       ),
+      debugShowCheckedModeBanner: false,
       home: ChangeNotifierProvider<AppState>(
         create: (context) => AppState(),
         builder: (context, child) {
