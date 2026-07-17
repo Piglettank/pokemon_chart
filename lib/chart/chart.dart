@@ -5,7 +5,7 @@ import 'package:pokemon_chart/chart/effectiveness_box.dart';
 import 'package:pokemon_chart/chart/type_horizontal.dart';
 import 'package:pokemon_chart/chart/type_vertical.dart';
 import 'package:pokemon_chart/helper.dart';
-import 'package:pokemon_chart/state.dart';
+import 'package:pokemon_chart/state/state.dart';
 import 'package:pokemon_chart/style.dart';
 import 'package:pokemon_chart/type.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +22,7 @@ class Chart extends StatefulWidget {
 
 class _ChartState extends State<Chart> {
   final _gridKey = GlobalKey();
-  bool _shouldDeselectOnNextPress = false;
+  final _outlineColor = const Color.fromARGB(179, 17, 30, 4);
 
   void selectRow(int row) {
     final state = AppState.of(context, listen: false);
@@ -31,8 +31,7 @@ class _ChartState extends State<Chart> {
 
   void clearSelection() {
     final state = AppState.of(context, listen: false);
-    state.clearDefenseTypes();
-    state.clearSelectedRow();
+    state.reset();
   }
 
   @override
@@ -42,196 +41,184 @@ class _ChartState extends State<Chart> {
     final defenseTypes = state.defenseTypes;
     final selectedRow = state.selectedRow;
     final fade = state.fade;
+    final shouldDeselectOnNextPress = state.nextTapClears;
 
-    return Listener(
-      onPointerDown: (_) {
-        if (_shouldDeselectOnNextPress) {
-          _shouldDeselectOnNextPress = false;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        if (shouldDeselectOnNextPress) {
           clearSelection();
         }
       },
-      child: Scaffold(
-        backgroundColor: fade ? Colors.black54 : null,
-        floatingActionButton: mobile ? MyFAB(visible: selectedRow == null) : null,
-        body: GestureDetector(
-          behavior: fade ? HitTestBehavior.opaque : HitTestBehavior.translucent,
-          onTap: fade ? clearSelection : null,
-          child: Center(
-            child: Container(
-              decoration: BoxDecoration(border: .fromBorderSide(Style.borderSide())),
-              margin: mobile ? .zero : .all(24),
-              constraints: BoxConstraints(maxWidth: 880),
-              child: Material(
-                color: Colors.white,
-                child: Stack(
-                  fit: .expand,
+      child: Center(
+        child: Container(
+          decoration: BoxDecoration(border: .all(color: _outlineColor, width: 2)),
+          margin: mobile ? .zero : .all(24),
+          constraints: BoxConstraints(maxWidth: 880, maxHeight: 880),
+          child: Material(
+            color: Style.chartBackgroundColor(context),
+            child: Stack(
+              fit: .expand,
+              children: [
+                Column(
                   children: [
-                    Column(
+                    Row(
                       children: [
-                        Row(
+                        Stack(
                           children: [
-                            Stack(
-                              children: [
-                                Container(
-                                  width: mobile ? Chart.sidebarSizeSmall : Chart.sidebarSize,
-                                  height: mobile ? Chart.sidebarSizeSmall : Chart.sidebarSize,
-                                  decoration: BoxDecoration(
-                                    color: fade ? Colors.black54 : Colors.white,
-                                    border: Border(right: Style.borderSide()),
-                                  ),
-                                ),
-                                if (!mobile) ...[
-                                  Positioned(
-                                    bottom: 4,
-                                    left: 4,
-                                    child: Row(
-                                      children: [
-                                        Image.asset(
-                                          'assets/icons/sword.png',
-                                          height: 24,
-                                          width: 24,
-                                        ),
-                                        const SizedBox(width: 2),
-                                        const Text('ATK'),
-                                      ],
-                                    ),
-                                  ),
-                                  Positioned(
-                                    right: 4,
-                                    top: 8,
-                                    child: Column(
-                                      children: [
-                                        Image.asset(
-                                          'assets/icons/shield.png',
-                                          height: 24,
-                                          width: 24,
-                                        ),
-                                        const SizedBox(height: 2),
-                                        const RotatedBox(quarterTurns: 1, child: Text('DEF')),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ],
+                            Container(
+                              width: mobile ? Chart.sidebarSizeSmall : Chart.sidebarSize,
+                              height: mobile ? Chart.sidebarSizeSmall : Chart.sidebarSize,
+                              decoration: BoxDecoration(
+                                color: fade
+                                    ? Style.chartBackgroundColorDark(context)
+                                    : Colors.transparent,
+                                border: Border(right: Style.borderSide()),
+                              ),
                             ),
-                            for (final type in Types.values)
-                              Expanded(
-                                child: TypeVertical(
-                                  type,
-                                  onTap: () =>
-                                      AppState.of(context, listen: false).selectDefenseType(type),
+                            if (!mobile) ...[
+                              Positioned(
+                                bottom: 4,
+                                left: 4,
+                                child: Row(
+                                  children: [
+                                    Image.asset('assets/icons/sword.png', height: 24, width: 24),
+                                    const SizedBox(width: 2),
+                                    const Text('ATK'),
+                                  ],
                                 ),
                               ),
+                              Positioned(
+                                right: 4,
+                                top: 8,
+                                child: Column(
+                                  children: [
+                                    Image.asset('assets/icons/shield.png', height: 24, width: 24),
+                                    const SizedBox(height: 2),
+                                    const RotatedBox(quarterTurns: 1, child: Text('DEF')),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ],
                         ),
-                        Expanded(
-                          child: LayoutBuilder(
-                            builder: (context, constrains) {
-                              return Listener(
-                                onPointerDown: (event) {
-                                  if (!_shouldDeselectOnNextPress && selectedRow == null) {
-                                    state.clearDefenseTypes();
-                                    final row = _rowFromPointerEvent(event);
-                                    if (row != null) selectRow(row);
-                                  }
-                                },
-                                onPointerMove: (event) {
-                                  final row = _rowFromPointerEvent(event);
-                                  if (row != null && row != selectedRow) {
-                                    selectRow(row);
-                                  }
-                                },
-                                onPointerUp: (_) {
-                                  if (selectedRow != null) {
-                                    _shouldDeselectOnNextPress = true;
-                                  }
-                                },
-                                child: SizedBox(
-                                  key: _gridKey,
-                                  height: constrains.maxHeight,
-                                  child: Row(
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment: .start,
-                                        children: [
-                                          for (final type in Types.values)
-                                            Expanded(child: TypeHorizontal(type: type)),
-                                        ],
-                                      ),
-                                      Expanded(
-                                        child: Column(
-                                          children: [
-                                            for (final attack in Types.values)
-                                              Expanded(
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    border: Border(
-                                                      top: Style.borderSide(),
-                                                      right: Style.borderSide(),
-                                                    ),
-                                                    color: attack.color.withAlpha(40),
-                                                  ),
-
-                                                  child: Row(
-                                                    children: [
-                                                      for (final defense in Types.values)
-                                                        Expanded(
-                                                          child: EffectivenessBox(
-                                                            effectiveness: defense.defend(attack),
-                                                          ),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
+                        for (final type in Types.values)
+                          Expanded(
+                            child: TypeVertical(
+                              type,
+                              onTap: () =>
+                                  AppState.of(context, listen: false).selectDefenseType(type),
+                            ),
                           ),
-                        ),
                       ],
                     ),
-                    if (fade)
-                      Container(
-                        margin: .only(left: mobile ? Chart.sidebarSizeSmall : Chart.sidebarSize),
-                        child: Column(
-                          children: [
-                            if (defenseTypes.isNotEmpty)
-                              SizedBox(height: mobile ? Chart.sidebarSizeSmall : Chart.sidebarSize),
-                            if (selectedRow != null) ...[
-                              Expanded(
-                                flex: selectedRow,
-                                child: Container(color: Colors.black54),
-                              ),
-                              Row(
+                    Expanded(
+                      child: LayoutBuilder(
+                        builder: (context, constrains) {
+                          return Listener(
+                            onPointerDown: (event) {
+                              if (!shouldDeselectOnNextPress && selectedRow == null) {
+                                state.clearDefenseTypes();
+                                final row = _rowFromPointerEvent(event);
+                                if (row != null) selectRow(row);
+                              }
+                            },
+                            onPointerMove: (event) {
+                              final row = _rowFromPointerEvent(event);
+                              if (row != null && row != selectedRow) {
+                                selectRow(row);
+                              }
+                            },
+                            onPointerUp: (_) {
+                              if (selectedRow != null) {
+                                state.setNextTapClears(true);
+                              }
+                            },
+                            child: SizedBox(
+                              key: _gridKey,
+                              height: constrains.maxHeight,
+                              child: Row(
                                 children: [
-                                  for (final type in Types.values)
-                                    Expanded(child: TypeVertical(type)),
+                                  Column(
+                                    crossAxisAlignment: .start,
+                                    children: [
+                                      for (final type in Types.values)
+                                        Expanded(child: TypeHorizontal(type: type)),
+                                    ],
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      children: [
+                                        for (final attack in Types.values)
+                                          Expanded(
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                border: Border(
+                                                  top: Style.borderSide(),
+                                                  right: Style.borderSide(),
+                                                ),
+                                                color: attack.color.withAlpha(40),
+                                              ),
+
+                                              child: Row(
+                                                children: [
+                                                  for (final defense in Types.values)
+                                                    Expanded(
+                                                      child: EffectivenessBox(
+                                                        effectiveness: defense.defend(attack),
+                                                      ),
+                                                    ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
-                              Spacer(),
-                              Expanded(
-                                flex: Types.values.length - selectedRow - 1,
-                                child: Container(color: Colors.black54),
-                              ),
-                            ] else
-                              Expanded(child: Container(color: Colors.black54)),
-                          ],
-                        ),
+                            ),
+                          );
+                        },
                       ),
-                    if (!mobile && defenseTypes.isNotEmpty)
-                      DefenseOverlay(
-                        defenseTypes,
-                        defenseOnTap: AppState.of(context, listen: false).selectDefenseType,
-                      ),
+                    ),
                   ],
                 ),
-              ),
+                if (fade)
+                  Container(
+                    margin: .only(left: mobile ? Chart.sidebarSizeSmall : Chart.sidebarSize),
+                    child: Column(
+                      children: [
+                        if (defenseTypes.isNotEmpty)
+                          SizedBox(height: mobile ? Chart.sidebarSizeSmall : Chart.sidebarSize),
+                        if (selectedRow != null) ...[
+                          Expanded(
+                            flex: selectedRow,
+                            child: Container(color: Style.chartBackgroundColorDark(context)),
+                          ),
+                          Row(
+                            children: [
+                              for (final type in Types.values) Expanded(child: TypeVertical(type)),
+                            ],
+                          ),
+                          Spacer(),
+                          Expanded(
+                            flex: Types.values.length - selectedRow - 1,
+                            child: Container(color: Style.chartBackgroundColorDark(context)),
+                          ),
+                        ] else
+                          Expanded(
+                            child: Container(color: Style.chartBackgroundColorDark(context)),
+                          ),
+                      ],
+                    ),
+                  ),
+                if (!mobile && defenseTypes.isNotEmpty)
+                  DefenseOverlay(
+                    defenseTypes,
+                    defenseOnTap: AppState.of(context, listen: false).selectDefenseType,
+                  ),
+              ],
             ),
           ),
         ),

@@ -44,6 +44,20 @@ class AppState with ChangeNotifier {
     _notify(true);
   }
 
+  bool _nextTapClears = false;
+  bool get nextTapClears => _nextTapClears || defenseTypes.isNotEmpty;
+
+  void setNextTapClears(bool value) {
+    _nextTapClears = value;
+    _notify(true);
+  }
+
+  void reset() {
+    clearDefenseTypes();
+    clearSelectedRow();
+    setNextTapClears(false);
+  }
+
   void _notify(bool notify) {
     if (notify) {
       notifyListeners();

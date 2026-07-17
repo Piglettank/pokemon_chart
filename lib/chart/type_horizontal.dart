@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pokemon_chart/components/outlined_text.dart';
 import 'package:pokemon_chart/extensions.dart';
 import 'package:pokemon_chart/helper.dart';
-import 'package:pokemon_chart/state.dart';
+import 'package:pokemon_chart/state/state.dart';
 import 'package:pokemon_chart/style.dart';
 import 'package:pokemon_chart/type.dart';
-
 
 class TypeHorizontal extends StatelessWidget {
   final Types type;
@@ -19,9 +18,7 @@ class TypeHorizontal extends StatelessWidget {
     final state = AppState.of(context);
     final defenseTypes = state.defenseTypes;
     final selectedRow = state.selectedRow;
-    final fade =
-        (selectedRow != null && selectedRow != type.index) ||
-        defenseTypes.isNotEmpty;
+    final fade = (selectedRow != null && selectedRow != type.index) || defenseTypes.isNotEmpty;
 
     return Stack(
       children: [
@@ -33,12 +30,7 @@ class TypeHorizontal extends StatelessWidget {
             border: Border(top: Style.borderSide(), right: Style.borderSide()),
           ),
           child: mobile
-              ? Center(
-                  child: OutlinedText(
-                    type.abbreviation,
-                    fontSize: mobile ? 12 : 14,
-                  ),
-                )
+              ? Center(child: OutlinedText(type.abbreviation, fontSize: mobile ? 12 : 14))
               : Align(
                   alignment: .centerLeft,
                   child: Row(
@@ -49,11 +41,7 @@ class TypeHorizontal extends StatelessWidget {
                           border: .all(width: 1.5, color: Colors.black45),
                           shape: .circle,
                         ),
-                        child: Image.asset(
-                          type.imagePath(),
-                          width: 26,
-                          height: 26,
-                        ),
+                        child: Image.asset(type.imagePath(), width: 26, height: 26),
                       ),
                       OutlinedText(type.name.capitalize),
                     ],

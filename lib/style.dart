@@ -9,4 +9,12 @@ class Style {
     final clr = Color.alphaBlend(blend, Color.fromARGB(31, 23, 23, 23));
     return BorderSide(color: clr);
   }
+
+  static Color chartBackgroundColor(BuildContext context) {
+    return const Color.fromARGB(195, 255, 255, 255);
+  }
+
+  static Color chartBackgroundColorDark(BuildContext context) {
+    return Color.fromARGB(160, 0, 0, 0);
+  }
 }

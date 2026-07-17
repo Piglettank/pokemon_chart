@@ -4,7 +4,7 @@ import 'package:pokemon_chart/chart/defense_overlay.dart';
 import 'package:pokemon_chart/chart/effectiveness_box.dart';
 import 'package:pokemon_chart/extensions.dart';
 import 'package:pokemon_chart/helper.dart';
-import 'package:pokemon_chart/state.dart';
+import 'package:pokemon_chart/state/state.dart';
 import 'package:pokemon_chart/style.dart';
 import 'package:pokemon_chart/type.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pokemon_chart/app.dart';
 import 'package:provider/provider.dart';
-import 'package:pokemon_chart/chart/chart.dart';
-import 'package:pokemon_chart/state.dart';
+import 'package:pokemon_chart/state/state.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Pokémon type chart',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 176, 62, 0)),
+        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 68, 140, 1)),
       ),
       debugShowCheckedModeBanner: false,
       home: ChangeNotifierProvider<AppState>(
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
           AppState.stateContext = context;
           return child!;
         },
-        child: const Chart(),
+        child: const App(),
       ),
     );
   }

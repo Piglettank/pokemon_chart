@@ -5,7 +5,7 @@ import 'package:pokemon_chart/components/outlined_text.dart';
 import 'package:pokemon_chart/chart/effectiveness_box.dart';
 import 'package:pokemon_chart/chart/type_vertical.dart';
 import 'package:pokemon_chart/helper.dart';
-import 'package:pokemon_chart/state.dart';
+import 'package:pokemon_chart/state/state.dart';
 import 'package:pokemon_chart/type.dart';
 
 class DefenseOverlay extends StatelessWidget {
@@ -29,6 +29,7 @@ class DefenseOverlay extends StatelessWidget {
         builder: (context, constraints) {
           return GestureDetector(
             behavior: HitTestBehavior.opaque,
+            onTap: () {},
             child: Padding(
               padding: .symmetric(vertical: 12),
               child: Material(
