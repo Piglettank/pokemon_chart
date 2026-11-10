@@ -2,6 +2,8 @@
 
 An interactive Pokémon type chart. Made by me :D
 
+**Try it out at [chart.fallberg.dev](https://chart.fallberg.dev/)**
+
 ## How it works
 
 - Tap a row to highlight it. Helps with readability.
